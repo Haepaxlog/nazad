@@ -2,7 +2,7 @@
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
 
- #[inline_props]
+#[inline_props]
 fn ActionButton<'a>(cx: Scope, title: &'a str) -> Element {
      cx.render(rsx!(
          div {
@@ -14,8 +14,8 @@ fn ActionButton<'a>(cx: Scope, title: &'a str) -> Element {
  }
 
 pub fn QuickActions(cx: Scope) -> Element {
-    let title_header = "Quick Actions";
-    let topics = ["Books", "Videos"];
+    let title_header: &str = "Quick Actions";
+    let topics: [&str; 3] = ["Books", "Video", "Audio"];
 
     cx.render(rsx!(
         div {

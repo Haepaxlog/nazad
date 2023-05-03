@@ -3,10 +3,12 @@
 mod components;
 
 use components::{
-    actions
+    actions,
+    user,
 };
 
 use dioxus::prelude::*;
+use crate::components::user::UserProfile;
 
 fn main() {
     dioxus_web::launch(
@@ -15,9 +17,14 @@ fn main() {
 }
 
 fn App(cx: Scope) -> Element {
-    cx.render(rsx! {
+    let user = UserProfile::new("../assets/profile.png", "Ian McPerson");
+
+    cx.render(rsx! (
         div {
-            actions::QuickActions {}
+            actions::QuickActions {},
+            user::UserBox {
+                user: user,
+            },
         }
-    })
+    ))
 }
