@@ -17,7 +17,7 @@ fn main() {
 }
 
 fn App(cx: Scope) -> Element {
-    let user = UserProfile::from_data("../assets/profile.png", "Ian McPerson");
+    let mut user = UserProfile::from_data("../assets/profile.png", "Ian McPerson");
 
     cx.render(rsx! (
         div {

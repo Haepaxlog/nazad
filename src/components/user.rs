@@ -19,9 +19,9 @@ struct Goal {
     date: Date,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Props)]
 struct UserDiagnostics {
-    total_studyTime: usize,
+    total_studytime: usize,
     daily_average: usize,
     vocab_size: usize,
     chapters_read: usize,
@@ -46,6 +46,8 @@ pub struct UserProfile {
 
 struct Visible(bool);
 
+const BUTTON_STYLE: &str = "bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded";
+
 impl UserProfile {
     pub fn from_data(picture_path: &str, user_name: &str) -> UserProfile {
         UserProfile {
@@ -64,7 +66,7 @@ impl UserProfile {
             }],
             visible_at_startup: true,
             diagnostics: UserDiagnostics {
-                total_studyTime: 0,
+                total_studytime: 0,
                 daily_average: 0,
                 vocab_size: 0,
                 chapters_read: 0,
@@ -97,15 +99,18 @@ impl UserProfile {
     }
 }
 
-
 fn HideUserButton(cx: Scope) -> Element {
     let visible = use_shared_state::<Visible>(cx).unwrap();
 
+    let set_visibility = !visible.read().0;
+
     cx.render(rsx!(
         button {
+            class: BUTTON_STYLE,
             onclick: move |_| {
-                visible.write().0 = !visible.read().0;
-            }
+                visible.write().0 = set_visibility;
+                },
+            "Hide"
         }
     ))
 }
@@ -119,6 +124,76 @@ fn ProfileSection(cx:Scope<User>) -> Element {
             },
             p {
                 "{cx.props.name}"
+            }
+        }
+    ))
+}
+
+#[inline_props]
+fn DataParagraph(cx: Scope, head: String, data: String) -> Element {
+    cx.render(rsx!(
+        div {
+            p {
+                class: "text-xs text-gray-500",
+                "{head}"
+            },
+            p {
+                "{data}"
+            }
+        }
+    ))
+}
+
+fn DiagnosticsSection(cx:Scope<UserDiagnostics>) -> Element {
+    cx.render(rsx!(
+        div {
+            class: "grid grid-rows-2 grid-flow-col gap-4",
+            DataParagraph{
+                head: "Total Study Time".to_string(),
+                data: cx.props.total_studytime.to_string()
+            },
+            DataParagraph{
+                head: "Daily Average".to_string(),
+                data: cx.props.daily_average.to_string()
+            },
+            DataParagraph{
+                head: "Vocab Size".to_string(),
+                data: cx.props.vocab_size.to_string()
+            },
+            DataParagraph{
+                head: "Chapters Read".to_string(),
+                data: cx.props.chapters_read.to_string()
+            },
+            DataParagraph{
+                head: "Books Read".to_string(),
+                data: cx.props.books_read.to_string()
+            },
+            DataParagraph{
+                head: "Videos Watched".to_string(),
+                data: cx.props.videos_watched.to_string()
+            },
+            DataParagraph{
+                head: "Goals Completed".to_string(),
+                data: cx.props.goals_completed.to_string()
+            }
+        }
+    ))
+}
+
+#[inline_props]
+fn ReadDataSection(cx: Scope) -> Element {
+    cx.render(rsx!(
+        div {
+            class: "grid grid-rows 2 grid-flow-col gap-4",
+            p {
+                "Log Data from File"
+            },
+            button {
+                class: BUTTON_STYLE,
+                onclick: move |_| {
+
+                },
+                "Read Data"
             }
         }
     ))
@@ -140,12 +215,27 @@ pub fn UserBox(cx:Scope, user: UserProfile) -> Element {
                     ProfileSection {
                       name: user.profile.name.clone(),
                       picture_path: user.profile.picture_path.clone()
+                    },
+                    DiagnosticsSection {
+                      total_studytime: user.diagnostics.total_studytime,
+                      daily_average: user.diagnostics.daily_average,
+                      vocab_size: user.diagnostics.vocab_size,
+                      chapters_read: user.diagnostics.chapters_read,
+                      books_read: user.diagnostics.books_read,
+                      videos_watched: user.diagnostics.videos_watched,
+                      goals_completed: user.diagnostics.goals_completed
+                    },
+                    ReadDataSection {
                     }
                 }
             ));
     } else {
         cx.render(rsx!(
-            div {}
+            div {
+                HideUserButton{
+
+                },
+            }
         ))
     }
 }
