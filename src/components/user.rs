@@ -30,7 +30,7 @@ struct UserDiagnostics {
     goals_completed: usize,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Props)]
 struct User {
     picture_path: String,
     name: String,
@@ -47,13 +47,13 @@ pub struct UserProfile {
 struct Visible(bool);
 
 impl UserProfile {
-    pub fn new(picture_path: &str, user_name: &str) -> UserProfile {
+    pub fn from_data(picture_path: &str, user_name: &str) -> UserProfile {
         UserProfile {
             profile: User{
                 picture_path: picture_path.to_string(),
                 name: user_name.to_string(),
             },
-            goals: Vec::from(Goal {
+            goals: vec![Goal {
                 completed: false,
                 title: "".to_string(),
                 date: Date {
@@ -61,7 +61,7 @@ impl UserProfile {
                     month: 0,
                     year: 0,
                 },
-            }),
+            }],
             visible_at_startup: true,
             diagnostics: UserDiagnostics {
                 total_studyTime: 0,
@@ -76,27 +76,19 @@ impl UserProfile {
     }
 
 
-    pub fn generate_diagnostic_data(&mut self, data_path: &str) -> Result<(), &str> {
+    pub fn generate_diagnostic_data(&mut self, data_path: &str) {
         let raw_diagnostic_data = UserProfile::get_diagnostics(data_path).unwrap();
-        let diagnostics = UserProfile::deserialize_diagnostics(raw_diagnostic_data);
+        let diagnostics = UserProfile::deserialize_diagnostics(&raw_diagnostic_data).unwrap();
 
-        match diagnostics {
-            Some(diagnostics) => Ok(self.diagnostics = UserProfile::process_diagnostics(diagnostics)),
-            None => Err("Coulnd't serialize diagnostics"),
-        }
+        self.diagnostics = UserProfile::process_diagnostics(diagnostics);
     }
 
-    fn get_diagnostics(data_path: &str) -> Option<&str> {
-        let mut diagnostics_data = String::new();
-        if fs::File::open(data_path).read_to_string(&mut diagnostics_data) {
-           return Some(diagnostics_data.as_str());
-        }
-        None
+    fn get_diagnostics(data_path: &str) -> std::io::Result<String> {
+        fs::read_to_string(data_path)
     }
 
-    fn deserialize_diagnostics(diagnostic_data: &str) -> serde_json::Result<UserDiagnostics> {
-        let diagnostics = serde_json::from_str(diagnostic_data);
-        diagnostics
+    fn deserialize_diagnostics(diagnostic_data: &String) -> serde_json::Result<UserDiagnostics> {
+        serde_json::from_str(diagnostic_data)
     }
 
     fn process_diagnostics(diagnostics: UserDiagnostics) -> UserDiagnostics {
@@ -140,16 +132,17 @@ pub fn UserBox(cx:Scope, user: UserProfile) -> Element {
     let visible = use_shared_state::<Visible>(cx).unwrap();
 
     if visible.read().0 {
-        cx.render(rsx!(
+        return cx.render(rsx!(
                 div {
                     HideUserButton {
 
                     },
                     ProfileSection {
-
+                      name: user.profile.name.clone(),
+                      picture_path: user.profile.picture_path.clone()
                     }
                 }
-            ))
+            ));
     } else {
         cx.render(rsx!(
             div {}
