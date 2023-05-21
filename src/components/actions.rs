@@ -19,6 +19,7 @@ pub fn QuickActions(cx: Scope) -> Element {
 
     cx.render(rsx!(
         div {
+            class: "grid gap-2 justify-items-center items-center",
             p {
                 title_header
             },
@@ -27,7 +28,6 @@ pub fn QuickActions(cx: Scope) -> Element {
                     title: topic,
                 })
             })
-
         }
     ))
 }

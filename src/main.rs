@@ -18,6 +18,7 @@ fn main() {
 fn App(cx: Scope) -> Element {
     cx.render(rsx! (
         div {
+            class: "grid grid-cols-2 h-[100vh]",
             actions::QuickActions {},
             user::UserBox {},
         }
