@@ -14,6 +14,8 @@
     "dev:css": "tailwindcss -w -o tailwind.css",
     "build": "run-s build:css build:dioxus",
     "build:dioxus": "trunk build --release",
-    "build:css": "tailwindcss -o tailwind.css --minify"
+    "build:css": "tailwindcss -o tailwind.css --minify",
+    "release": "run-s build dev:serve",
+    "release:docker": "run-s dev:serve"
   }
 }
