@@ -5,6 +5,8 @@ mod components;
 use components::{
     actions,
     user,
+    dashboard,
+    log
 };
 
 use dioxus::prelude::*;
@@ -16,11 +18,16 @@ fn main() {
 }
 
 fn App(cx: Scope) -> Element {
+    use_shared_state_provider(cx, || user::UserProfile::new());
+    use_shared_state_provider(cx, || actions::SelectedCategory::new());
+    use_shared_state_provider(cx, || log::LogData::new());
+
     cx.render(rsx! (
         div {
-            class: "grid grid-cols-2 h-[100vh]",
+            class: "grid grid-cols-6 h-[100vh]",
             actions::QuickActions {},
-            user::UserBox {},
+            dashboard::View {},
+            user::UserBox {}
         }
     ))
 }

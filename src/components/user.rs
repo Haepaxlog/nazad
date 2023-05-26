@@ -55,7 +55,6 @@ pub struct UserProfile {
 }
 
 struct Visible(bool);
-struct Clicked(bool);
 struct Edit(bool);
 
 const BUTTON_STYLE: &str = "bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded";
@@ -496,7 +495,6 @@ fn AddGoalSection(cx: Scope) -> Element {
 
 // Main User Box
 pub fn UserBox(cx:Scope) -> Element {
-    use_shared_state_provider(cx, || UserProfile::new());
     let user = use_shared_state::<UserProfile>(cx).unwrap();
 
     use_shared_state_provider(cx, || Visible(user.read().visible_at_startup));
@@ -509,7 +507,9 @@ pub fn UserBox(cx:Scope) -> Element {
                     HideUserButton {},
                     ProfileSection {},
                     DiagnosticsSection {},
+                    hr {},
                     ReadDataSection {},
+                    hr {},
                     GoalsSection {},
                     AddGoalSection {}
                 }
