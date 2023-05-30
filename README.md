@@ -44,7 +44,7 @@ Or use the Dockerfile (here you don't need trunk installed locally):
 
 ```bash
 $ docker build -t nazad-docker .
-$ docker exec -p 8080:8080 -it localhost/nazad-test 
+$ docker exec -p 8080:8080 -it localhost/nazad-docker
 ```
 
 ### Contributing
